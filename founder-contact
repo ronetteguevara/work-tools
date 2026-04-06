@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Founder Contact Generator – DST Global</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f6f8; --card: #fff; --accent: #2d3a8c; --accent-lt: #eaecf8;
+      --text: #1a1a2e; --muted: #6b7280; --border: #e5e7eb; --r: 12px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .topbar { background: #1e2a6e; padding: 11px 32px; display: flex; align-items: center; gap: 10px; }
+    .topbar a { color: rgba(255,255,255,0.5); font-size: 13px; text-decoration: none; }
+    .topbar a:hover { color: #fff; }
+    .topbar-sep { color: rgba(255,255,255,0.2); font-size: 13px; }
+    .topbar-title { color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 500; }
+    .hero { background: linear-gradient(135deg, #1e2a6e, #2d3a8c 60%, #3b4db8); padding: 48px 40px 44px; text-align: center; }
+    .hero h1 { font-size: clamp(22px, 4vw, 32px); color: #fff; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .hero p { color: rgba(255,255,255,0.65); font-size: 15px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+    main { max-width: 1000px; margin: 0 auto; padding: 40px 24px 72px; }
+    .top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .lbl { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .tabs { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; width: fit-content; margin-bottom: 20px; }
+    .tab { padding: 8px 18px; font-size: 13px; border: none; background: var(--card); color: var(--muted); cursor: pointer; }
+    .tab.on { background: var(--accent); color: #fff; font-weight: 600; }
+    .tab:not(.on):hover { background: var(--accent-lt); color: var(--accent); }
+    .tab-panel { display: none; }
+    .tab-panel.on { display: block; }
+    .frow { display: flex; gap: 10px; flex-wrap: wrap; }
+    .frow input { flex: 1 1 180px; }
+    input, textarea, select {
+      border: 1px solid var(--border); border-radius: 8px; padding: 9px 13px;
+      font-size: 13px; color: var(--text); background: var(--card); outline: none;
+      width: 100%; font-family: inherit; transition: border .15s, box-shadow .15s;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,58,140,.1); }
+    textarea { resize: vertical; }
+    .btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s; }
+    .btn:hover:not(:disabled) { background: #1e2a6e; }
+    .btn:disabled { background: #c5cbe8; cursor: not-allowed; }
+    .btn-ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .btn-ghost:hover { background: var(--accent-lt); }
+    .helper { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .tw { overflow-x: auto; border-radius: var(--r); border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--accent-lt); }
+    th { padding: 10px 14px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f9faff; }
+    .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
+    .b-valid      { background: #e6f4ee; color: #1a7a45; }
+    .b-risky      { background: #fff7e0; color: #9a6700; }
+    .b-invalid    { background: #fdecea; color: #c0392b; }
+    .b-unverified { background: var(--accent-lt); color: var(--muted); }
+    .b-verifying  { background: var(--accent-lt); color: var(--accent); }
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+    .chip { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
+    .cp { background: #e6f4ee; color: #1a7a45; }
+    .cf { background: #fdecea; color: #c0392b; }
+    .cn { background: #f0f0ec; color: #6b7280; }
+    .src-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-left: 6px; }
+    .src-PitchBook { background: #fde8f0; color: #9b1c6b; }
+    .src-Apollo   { background: #e0f0ff; color: #1a56a0; }
+    .src-Clay     { background: #e6f9f2; color: #166534; }
+    .src-LinkedIn { background: #e8f0fe; color: #1e3a8a; }
+    .src-Web      { background: #f0f0ec; color: #6b7280; }
+    .muted { color: var(--muted); font-size: 12px; font-style: italic; }
+    .mono  { font-family: monospace; font-size: 12px; }
+    .score-high { color: #1a7a45; font-weight: 700; }
+    .score-mid  { color: #9a6700; font-weight: 700; }
+    .score-low  { color: #c0392b; font-weight: 700; }
+    .rm { background: none; border: none; cursor: pointer; color: #ccc; font-size: 18px; line-height: 1; }
+    .rm:hover { color: #e24b4a; }
+    .empty { text-align: center; padding: 52px 0; color: var(--muted); font-size: 14px; }
+    footer { background: #1e2a6e; color: rgba(255,255,255,0.45); text-align: center; padding: 22px 40px; font-size: 13px; }
+    footer a { color: rgba(255,255,255,0.65); text-decoration: none; }
+    footer a:hover { color: #fff; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/work-tools/">← DST Global Tools</a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">Founder Contact Generator</span>
+</div>
+
+<div class="hero">
+  <h1>Founder Contact Generator</h1>
+  <p>Enter a company name and website to pull the founder or CEO's contact details from PitchBook, with email fallback via Apollo, Clay and LinkedIn — verified by Hunter.io.</p>
+</div>
+
+<main>
+  <div class="top-row">
+    <div class="lbl">Lookup</div>
+    <button class="btn-ghost" id="exportBtn" style="display:none" onclick="exportCSV()">Export CSV ↓</button>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab on" onclick="switchTab('single', this)">Single lookup</button>
+      <button class="tab" onclick="switchTab('bulk', this)">Bulk upload</button>
+    </div>
+
+    <div class="tab-panel on" id="tab-single">
+      <div class="frow">
+        <input id="companyInput" placeholder="Company name" onkeydown="if(event.key==='Enter')doLookup()" />
+        <input id="websiteInput" placeholder="Website (e.g. acme.com)" onkeydown="if(event.key==='Enter')doLookup()" />
+        <button class="btn" onclick="doLookup()">Look up →</button>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab-bulk">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div>
+          <p class="helper">Upload a CSV with columns: <code>company, website</code></p>
+          <input type="file" accept=".csv" onchange="handleFile(this)" />
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:16px">
+          <p class="helper">Or paste rows (one per line): <code>Company Name, website.com</code></p>
+          <textarea id="bulkInput" rows="4" placeholder="Acme Corp, acme.com&#10;Globex, globex.com" style="font-family:monospace;margin-bottom:10px"></textarea>
+          <button class="btn" onclick="doBulk()">Process →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultsWrap" style="display:none">
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Name</th>
+            <th>Title</th>
+            <th>Email</th>
+            <th>Verification</th>
+            <th>Score</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="empty" id="emptyState">
+    No results yet — run a lookup to get started
+  </div>
+</main>
+
+<footer>
+  DST Global · Internal Use Only &nbsp;·&nbsp; <a href="mailto:guevara@dstinvestment.com">Contact Ronette</a>
+</footer>
+
+<script>
+  // ── Config ────────────────────────────────────────────────────────
+  const ANTHROPIC_KEY = "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"; // Replace with your Anthropic key
+  const HUNTER_PROXY  = "https://hunter-proxy.guevara.workers.dev";
+
+  // ── State ─────────────────────────────────────────────────────────
+  let rows = [];
+  let rowId = 0;
+
+  // ── UI helpers ────────────────────────────────────────────────────
+  function switchTab(name, btn) {
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
+    document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("on"));
+    btn.classList.add("on");
+    document.getElementById("tab-" + name).classList.add("on");
+  }
+
+  function refreshTable() {
+    const tbody = document.getElementById("tbody");
+    const wrap  = document.getElementById("resultsWrap");
+    const empty = document.getElementById("emptyState");
+    const exportBtn = document.getElementById("exportBtn");
+
+    if (rows.length === 0) {
+      wrap.style.display  = "none";
+      empty.style.display = "block";
+      exportBtn.style.display = "none";
+      return;
+    }
+    wrap.style.display  = "block";
+    empty.style.display = "none";
+    exportBtn.style.display = "inline-block";
+
+    tbody.innerHTML = rows.map(r => `
+      <tr id="row-${r.id}">
+        <td>
+          <div style="font-weight:600">${esc(r.company)}</div>
+          <div class="muted" style="font-style:normal">${esc(r.website)}</div>
+        </td>
+        <td>${r.firstName ? `<span style="font-weight:500">${esc(r.firstName)} ${esc(r.lastName)}</span>` : `<span class="muted">${esc(r.nameStatus || "—")}</span>`}</td>
+        <td>${r.title ? esc(r.title) : '<span class="muted">—</span>'}</td>
+        <td>${emailCell(r)}</td>
+        <td>${verifyCell(r)}</td>
+        <td>${scoreCell(r)}</td>
+        <td><button class="rm" onclick="removeRow(${r.id})">×</button></td>
+      </tr>
+    `).join("");
+  }
+
+  function emailCell(r) {
+    if (r.email) {
+      const src = r.emailSource && r.emailSource !== "PitchBook"
+        ? `<span class="src-badge src-${r.emailSource}">${esc(r.emailSource)}</span>` : "";
+      return `<span class="mono">${esc(r.email)}</span>${src}`;
+    }
+    return `<span class="muted">${esc(r.emailStatus || "—")}</span>`;
+  }
+
+  function verifyCell(r) {
+    if (!r.verifyStatus || r.verifyStatus === "verifying") {
+      return `<span class="badge b-verifying">Verifying…</span>`;
+    }
+    let chips = "";
+    if (r.mx     !== undefined) chips += `<span class="chip ${r.mx     ? "cp":"cf"}">MX ${r.mx ? "✓":"✗"}</span>`;
+    if (r.smtp   !== undefined) chips += `<span class="chip ${r.smtp   ? "cp":"cf"}">SMTP ${r.smtp ? "✓":"✗"}</span>`;
+    if (r.disposable) chips += `<span class="chip cf">Disposable</span>`;
+    if (r.webmail)    chips += `<span class="chip cn">Webmail</span>`;
+    if (r.acceptAll)  chips += `<span class="chip cn">Accept-all</span>`;
+    return `<span class="badge b-${r.verifyStatus}">${capitalize(r.verifyStatus)}</span>${chips ? `<div class="chips">${chips}</div>` : ""}`;
+  }
+
+  function scoreCell(r) {
+    if (r.score === null || r.score === undefined) return '<span class="muted">—</span>';
+    const cls = r.score >= 80 ? "score-high" : r.score >= 50 ? "score-mid" : "score-low";
+    return `<span class="${cls}">${r.score}%</span>`;
+  }
+
+  function updateRow(id, patch) {
+    const idx = rows.findIndex(r => r.id === id);
+    if (idx === -1) return;
+    rows[idx] = { ...rows[idx], ...patch };
+    refreshTable();
+  }
+
+  function removeRow(id) {
+    rows = rows.filter(r => r.id !== id);
+    refreshTable();
+  }
+
+  function esc(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function capitalize(s) {
+    return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+  }
+
+  // ── Anthropic API ─────────────────────────────────────────────────
+  async function claudeCall(system, user, extras = {}) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_KEY,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system,
+        messages: [{ role: "user", content: user }],
+        ...extras,
+      }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content?.filter(b => b.type === "text").map(b => b.text).join("") || "";
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("No JSON in response: " + text.slice(0, 200));
+    return JSON.parse(match[0]);
+  }
+
+  // ── Step 1: PitchBook ─────────────────────────────────────────────
+  async function fetchPitchBook(company, website) {
+    return claudeCall(
+      `You have PitchBook MCP access. Find the Founder or CEO of the company.
+Return ONLY raw JSON, no markdown:
+Found with email: {"found":true,"firstName":"...","lastName":"...","title":"...","email":"..."}
+Found without email: {"found":true,"firstName":"...","lastName":"...","title":"...","email":null}
+Not found: {"found":false}`,
+      `Company: ${company}\nWebsite: ${website}`,
+      { mcp_servers: [{ type: "url", url: "https://premium.mcp.pitchbook.com/mcp", name: "pitchbook" }] }
+    );
+  }
+
+  // ── Step 2: Email fallback via web search ─────────────────────────
+  async function searchEmailFallback(firstName, lastName, company, website) {
+    return claudeCall(
+      `You are a research assistant. Use web search to find the professional email address for this person.
+Search Apollo.io, Clay.com, LinkedIn, and other professional directories.
+Return ONLY raw JSON:
+Found: {"found":true,"email":"...","source":"Apollo|Clay|LinkedIn|Web"}
+Not found: {"found":false}
+Do NOT guess or invent emails. Only return one if explicitly found in a source.`,
+      `Find the professional email for: ${firstName} ${lastName}, Founder/CEO at ${company} (${website})`,
+      { tools: [{ type: "web_search_20250305", name: "web_search" }] }
+    );
+  }
+
+  // ── Step 3: Verify via Hunter proxy ──────────────────────────────
+  async function verifyEmail(email) {
+    const res = await fetch(`${HUNTER_PROXY}/email-verifier?email=${encodeURIComponent(email)}`);
+    if (!res.ok) throw new Error(`Proxy returned ${res.status}`);
+    const json = await res.json();
+    const d = json.data;
+    if (!d) throw new Error("No data in Hunter response");
+    return {
+      verifyStatus: d.status || "unverified",
+      score:        d.score        ?? null,
+      mx:           d.mx_records   ?? undefined,
+      smtp:         d.smtp_check   ?? undefined,
+      disposable:   d.disposable   ?? undefined,
+      webmail:      d.webmail      ?? undefined,
+      acceptAll:    d.accept_all   ?? undefined,
+    };
+  }
+
+  // ── Process one row ───────────────────────────────────────────────
+  async function processRow(id, company, website) {
+    updateRow(id, { nameStatus: "Looking up PitchBook…", emailStatus: "Fetching…" });
+
+    // 1. PitchBook
+    let pb;
+    try {
+      pb = await fetchPitchBook(company, website);
+    } catch (e) {
+      updateRow(id, { nameStatus: "PitchBook error", emailStatus: e.message, verifyStatus: "unverified" });
+      return;
+    }
+
+    if (!pb.found) {
+      updateRow(id, { nameStatus: "Not found in PitchBook", emailStatus: "Not found", verifyStatus: "unverified" });
+      return;
+    }
+
+    updateRow(id, { firstName: pb.firstName, lastName: pb.lastName, title: pb.title, email: pb.email, emailSource: "PitchBook" });
+
+    let email = pb.email;
+    let emailSource = "PitchBook";
+
+    // 2. Fallback search if no email
+    if (!email) {
+      updateRow(id, { emailStatus: "Searching Apollo, Clay, LinkedIn…", verifyStatus: "verifying" });
+      try {
+        const fb = await searchEmailFallback(pb.firstName, pb.lastName, company, website);
+        if (fb.found && fb.email) {
+          email = fb.email;
+          emailSource = fb.source || "Web";
+          updateRow(id, { email, emailSource });
+        } else {
+          updateRow(id, { emailStatus: "Email not found", verifyStatus: "unverified" });
+          return;
+        }
+      } catch (e) {
+        updateRow(id, { emailStatus: "Search error: " + e.message, verifyStatus: "unverified" });
+        return;
+      }
+    }
+
+    // 3. Verify
+    updateRow(id, { verifyStatus: "verifying" });
+    try {
+      const v = await verifyEmail(email);
+      updateRow(id, { ...v });
+    } catch (e) {
+      updateRow(id, { verifyStatus: "unverified" });
+    }
+  }
+
+  // ── Single lookup ─────────────────────────────────────────────────
+  async function doLookup() {
+    const company = document.getElementById("companyInput").value.trim();
+    const website = document.getElementById("websiteInput").value.trim();
+    if (!company || !website) return;
+    const id = ++rowId;
+    rows.push({ id, company, website });
+    refreshTable();
+    document.getElementById("companyInput").value = "";
+    document.getElementById("websiteInput").value = "";
+    await processRow(id, company, website);
+  }
+
+  // ── Bulk paste ────────────────────────────────────────────────────
+  async function doBulk() {
+    const lines = document.getElementById("bulkInput").value.split("\n").filter(Boolean);
+    const entries = lines.map(l => {
+      const [c, s] = l.split(",").map(x => x.trim());
+      return { c, s };
+    }).filter(e => e.c && e.s);
+    document.getElementById("bulkInput").value = "";
+    const newRows = entries.map(({ c, s }) => ({ id: ++rowId, company: c, website: s }));
+    rows.push(...newRows);
+    refreshTable();
+    for (const r of newRows) await processRow(r.id, r.company, r.website);
+  }
+
+  // ── CSV file upload ───────────────────────────────────────────────
+  function handleFile(input) {
+    const file = input.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async ev => {
+      const lines = ev.target.result.split("\n").filter(Boolean);
+      const start = lines[0].toLowerCase().includes("company") ? 1 : 0;
+      const entries = lines.slice(start).map(l => {
+        const [c, s] = l.split(",").map(x => x.trim().replace(/^"|"$/g, ""));
+        return { c, s };
+      }).filter(e => e.c && e.s);
+      const newRows = entries.map(({ c, s }) => ({ id: ++rowId, company: c, website: s }));
+      rows.push(...newRows);
+      refreshTable();
+      for (const r of newRows) await processRow(r.id, r.company, r.website);
+    };
+    reader.readAsText(file);
+    input.value = "";
+  }
+
+  // ── Export CSV ────────────────────────────────────────────────────
+  function exportCSV() {
+    const hdr = "Company,Website,First Name,Last Name,Title,Email,Email Source,Verify Status,Score,MX,SMTP";
+    const body = rows.map(r =>
+      [r.company, r.website, r.firstName||"", r.lastName||"", r.title||"",
+       r.email||"", r.emailSource||"", r.verifyStatus||"", r.score??"", r.mx??"", r.smtp??""]
+       .map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")
+    );
+    const blob = new Blob([[hdr, ...body].join("\n")], { type: "text/csv" });
+    Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: "founder-contacts.csv" }).click();
+  }
+
+  refreshTable();
+</script>
+</body>
+</html>

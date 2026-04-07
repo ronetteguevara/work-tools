@@ -40,12 +40,7 @@
     .btn:disabled { background: #c5cbe8; cursor: not-allowed; }
     .btn-ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
     .btn-ghost:hover { background: var(--accent-lt); }
-    .btn-sm { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; font-size: 12px; cursor: pointer; }
-    .btn-sm:hover { background: var(--accent-lt); color: var(--accent); }
     .helper { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-    .api-banner { background: var(--accent-lt); border: 1px solid #c7cef5; border-radius: var(--r); padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .api-banner p { font-size: 13px; color: var(--accent); }
-    .api-banner input { max-width: 380px; font-family: monospace; font-size: 12px; }
     .tw { overflow-x: auto; border-radius: var(--r); border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); }
     table { width: 100%; border-collapse: collapse; }
     thead tr { background: var(--accent-lt); }
@@ -96,22 +91,9 @@
 </div>
 
 <main>
-
-  <!-- API Key Banner -->
-  <div class="api-banner" id="apiBanner">
-    <p>Enter your Anthropic API key to get started (stored locally in your browser only)</p>
-    <div style="display:flex;gap:8px;flex:1;max-width:480px;">
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." />
-      <button class="btn" onclick="saveKey()">Save</button>
-    </div>
-  </div>
-
   <div class="top-row">
     <div class="lbl">Lookup</div>
-    <div style="display:flex;gap:8px;">
-      <button class="btn-sm" onclick="resetKey()">Reset API key</button>
-      <button class="btn-ghost" id="exportBtn" style="display:none" onclick="exportCSV()">Export CSV ↓</button>
-    </div>
+    <button class="btn-ghost" id="exportBtn" style="display:none" onclick="exportCSV()">Export CSV ↓</button>
   </div>
 
   <div class="card">
@@ -170,34 +152,15 @@
 </footer>
 
 <script>
-  const HUNTER_PROXY = "https://hunter-proxy.guevara.workers.dev";
-
-  // ── API Key management ────────────────────────────────────────────
-  function getKey() { return (localStorage.getItem("dst_anthropic_key") || "").trim(); }
-
-  function saveKey() {
-    const val = document.getElementById("apiKeyInput").value.trim();
-    if (!val.startsWith("sk-ant-")) { alert("That doesn't look like a valid Anthropic key — it should start with sk-ant-"); return; }
-    localStorage.setItem("dst_anthropic_key", val);
-    document.getElementById("apiBanner").style.display = "none";
-    alert("API key saved!");
-  }
-
-  function resetKey() {
-    localStorage.removeItem("dst_anthropic_key");
-    document.getElementById("apiKeyInput").value = "";
-    document.getElementById("apiBanner").style.display = "flex";
-  }
-
-  function initBanner() {
-    if (getKey()) document.getElementById("apiBanner").style.display = "none";
-  }
+  // ── Worker URLs ───────────────────────────────────────────────────
+  const PITCHBOOK_PROXY = "https://pitchbook-proxy.guevara.workers.dev";
+  const HUNTER_PROXY    = "https://hunter-proxy.guevara.workers.dev";
 
   // ── State ─────────────────────────────────────────────────────────
   let rows = [];
   let rowId = 0;
 
-  // ── UI helpers ────────────────────────────────────────────────────
+  // ── UI ────────────────────────────────────────────────────────────
   function switchTab(name, btn) {
     document.querySelectorAll(".tab").forEach(t => t.classList.remove("on"));
     document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("on"));
@@ -210,7 +173,6 @@
   }
 
   function renderRow(r) {
-    // Email
     let emailHtml;
     if (r.email) {
       const srcBadge = r.emailSource && r.emailSource !== "PitchBook"
@@ -220,7 +182,6 @@
       emailHtml = `<span class="muted">${esc(r.emailStatus || "—")}</span>`;
     }
 
-    // Verification
     let verifyHtml;
     if (!r.verifyStatus || r.verifyStatus === "verifying") {
       verifyHtml = `<span class="badge b-verifying">Verifying…</span>`;
@@ -235,7 +196,6 @@
       verifyHtml = `<span class="badge b-${r.verifyStatus}">${lbl}</span>${chips ? `<div class="chips">${chips}</div>` : ""}`;
     }
 
-    // Score
     let scoreHtml = '<span class="muted">—</span>';
     if (r.score != null) {
       const cls = r.score >= 80 ? "score-high" : r.score >= 50 ? "score-mid" : "score-low";
@@ -286,83 +246,48 @@
     refreshTable();
   }
 
-  // ── Anthropic API call ────────────────────────────────────────────
-  async function claudeCall(system, user, extras = {}) {
-    const key = getKey();
-    if (!key) throw new Error("No API key — please enter your Anthropic key above");
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1000,
-        system,
-        messages: [{ role: "user", content: user }],
-        ...extras,
-      }),
-    });
-    const data = await res.json();
-    if (data.error) {
-      if (data.error.type === "authentication_error") {
-        localStorage.removeItem("dst_anthropic_key");
-        document.getElementById("apiBanner").style.display = "flex";
-        throw new Error("Invalid API key — please re-enter your key above");
-      }
-      throw new Error(data.error.message);
-    }
-    const text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("");
-    const match = text.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("No JSON found in Claude response");
-    return JSON.parse(match[0]);
-  }
-
-  // ── PitchBook lookup ──────────────────────────────────────────────
+  // ── Step 1: PitchBook via Cloudflare Worker ───────────────────────
   async function fetchPitchBook(company, website) {
-    return claudeCall(
-      `You have PitchBook MCP access. Find the Founder or CEO of the company. Return ONLY raw JSON, no markdown:
-Found with email: {"found":true,"firstName":"...","lastName":"...","title":"...","email":"..."}
-Found without email: {"found":true,"firstName":"...","lastName":"...","title":"...","email":null}
-Not found: {"found":false}`,
-      `Company: ${company}\nWebsite: ${website}`,
-      { mcp_servers: [{ type: "url", url: "https://premium.mcp.pitchbook.com/mcp", name: "pitchbook" }] }
-    );
+    const res = await fetch(PITCHBOOK_PROXY, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company, website }),
+    });
+    if (!res.ok) throw new Error(`PitchBook proxy error: ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data;
   }
 
-  // ── Email fallback: Apollo → Clay → LinkedIn ──────────────────────
+  // ── Step 2: Email fallback via Cloudflare Worker ──────────────────
   async function searchEmailFallback(firstName, lastName, company, website) {
-    return claudeCall(
-      `You are a research assistant. Use web search to find the professional email for this person.
-Search Apollo.io, Clay.com, LinkedIn in that order.
-Return ONLY raw JSON:
-Found: {"found":true,"email":"...","source":"Apollo|Clay|LinkedIn|Web"}
-Not found: {"found":false}
-Do NOT guess or invent emails. Only return one explicitly found in a source.`,
-      `Find the professional email for: ${firstName} ${lastName}, Founder/CEO at ${company} (${website})`,
-      { tools: [{ type: "web_search_20250305", name: "web_search" }] }
-    );
+    const res = await fetch(PITCHBOOK_PROXY + "/search-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ firstName, lastName, company, website }),
+    });
+    if (!res.ok) throw new Error(`Search proxy error: ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data;
   }
 
-  // ── Hunter.io verification via Cloudflare proxy ───────────────────
+  // ── Step 3: Hunter.io verification via Cloudflare Worker ─────────
   async function verifyEmail(email) {
     const res = await fetch(`${HUNTER_PROXY}/email-verifier?email=${encodeURIComponent(email)}`);
-    if (!res.ok) throw new Error(`Proxy returned HTTP ${res.status}`);
+    if (!res.ok) throw new Error(`Hunter proxy error: ${res.status}`);
     const json = await res.json();
     if (json.errors && json.errors.length) throw new Error(json.errors[0].details);
     const d = json.data;
     if (!d) throw new Error("No data in Hunter response");
     return {
-      verifyStatus: d.status    || "unverified",
-      score:        d.score      ?? null,
-      mx:           d.mx_records ?? null,
-      smtp:         d.smtp_check ?? null,
-      disposable:   d.disposable ?? null,
-      webmail:      d.webmail    ?? null,
-      acceptAll:    d.accept_all ?? null,
+      verifyStatus: d.status     || "unverified",
+      score:        d.score       ?? null,
+      mx:           d.mx_records  ?? null,
+      smtp:         d.smtp_check  ?? null,
+      disposable:   d.disposable  ?? null,
+      webmail:      d.webmail     ?? null,
+      acceptAll:    d.accept_all  ?? null,
     };
   }
 
@@ -389,7 +314,7 @@ Do NOT guess or invent emails. Only return one explicitly found in a source.`,
     let email = pb.email;
     let emailSource = "PitchBook";
 
-    // 2. Fallback if no email in PitchBook
+    // 2. Fallback if no email
     if (!email) {
       updateRow(id, { emailStatus: "Searching Apollo, Clay, LinkedIn…" });
       try {
@@ -408,7 +333,7 @@ Do NOT guess or invent emails. Only return one explicitly found in a source.`,
       }
     }
 
-    // 3. Verify via Hunter proxy
+    // 3. Verify
     try {
       const v = await verifyEmail(email);
       updateRow(id, {
@@ -430,7 +355,6 @@ Do NOT guess or invent emails. Only return one explicitly found in a source.`,
     const company = document.getElementById("companyInput").value.trim();
     const website = document.getElementById("websiteInput").value.trim();
     if (!company || !website) return;
-    if (!getKey()) { alert("Please enter your Anthropic API key first."); return; }
     const id = ++rowId;
     rows.push({ id, company, website });
     refreshTable();
@@ -440,7 +364,6 @@ Do NOT guess or invent emails. Only return one explicitly found in a source.`,
   }
 
   async function doBulk() {
-    if (!getKey()) { alert("Please enter your Anthropic API key first."); return; }
     const lines = document.getElementById("bulkInput").value.split("\n").filter(Boolean);
     const entries = lines.map(l => { const [c,s] = l.split(",").map(x=>x.trim()); return {c,s}; }).filter(e=>e.c&&e.s);
     document.getElementById("bulkInput").value = "";
@@ -451,7 +374,6 @@ Do NOT guess or invent emails. Only return one explicitly found in a source.`,
   }
 
   function handleFile(input) {
-    if (!getKey()) { alert("Please enter your Anthropic API key first."); return; }
     const file = input.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = async ev => {
@@ -467,7 +389,6 @@ Do NOT guess or invent emails. Only return one explicitly found in a source.`,
     input.value = "";
   }
 
-  // ── Export ────────────────────────────────────────────────────────
   function exportCSV() {
     const hdr = "Company,Website,First Name,Last Name,Title,Email,Email Source,Verify Status,Score,MX,SMTP";
     const body = rows.map(r =>
@@ -479,8 +400,6 @@ Do NOT guess or invent emails. Only return one explicitly found in a source.`,
     Object.assign(document.createElement("a"),{href:URL.createObjectURL(blob),download:"founder-contacts.csv"}).click();
   }
 
-  // ── Init ──────────────────────────────────────────────────────────
-  initBanner();
   refreshTable();
 </script>
 </body>

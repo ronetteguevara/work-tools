@@ -1,338 +1,1010 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Founder Contact Generator – DST Global</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #f5f6f8; --card: #fff; --accent: #2d3a8c; --accent-lt: #eaecf8;
-      --text: #1a1a2e; --muted: #6b7280; --border: #e5e7eb; --r: 12px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.07);
-    }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .topbar { background: #1e2a6e; padding: 11px 32px; display: flex; align-items: center; gap: 10px; }
-    .topbar a { color: rgba(255,255,255,0.5); font-size: 13px; text-decoration: none; }
-    .topbar a:hover { color: #fff; }
-    .topbar-sep { color: rgba(255,255,255,0.2); font-size: 13px; }
-    .topbar-title { color: rgba(255,255,255,0.85); font-size: 13px; font-weight: 500; }
-    .hero { background: linear-gradient(135deg, #1e2a6e, #2d3a8c 60%, #3b4db8); padding: 48px 40px 44px; text-align: center; }
-    .hero h1 { font-size: clamp(22px, 4vw, 32px); color: #fff; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 10px; }
-    .hero p { color: rgba(255,255,255,0.65); font-size: 15px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
-    main { max-width: 1000px; margin: 0 auto; padding: 40px 24px 72px; }
-    .top-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-    .lbl { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 22px 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
-    .frow { display: flex; gap: 10px; flex-wrap: wrap; }
-    .frow input { flex: 1 1 180px; }
-    input, textarea { border: 1px solid var(--border); border-radius: 8px; padding: 9px 13px; font-size: 13px; color: var(--text); background: var(--card); outline: none; width: 100%; font-family: inherit; transition: border .15s, box-shadow .15s; }
-    input:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,58,140,.1); }
-    textarea { resize: vertical; }
-    .btn { background: var(--accent); color: #fff; border: none; border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background .15s; }
-    .btn:hover:not(:disabled) { background: #1e2a6e; }
-    .btn:disabled { background: #c5cbe8; cursor: not-allowed; }
-    .btn-ghost { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .btn-ghost:hover { background: var(--accent-lt); }
-    .helper { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-    .tw { overflow-x: auto; border-radius: var(--r); border: 1px solid var(--border); background: var(--card); box-shadow: var(--shadow); }
-    table { width: 100%; border-collapse: collapse; }
-    thead tr { background: var(--accent-lt); }
-    th { padding: 10px 14px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
-    td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #f9faff; }
-    .badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
-    .b-valid      { background: #e6f4ee; color: #1a7a45; }
-    .b-risky      { background: #fff7e0; color: #9a6700; }
-    .b-invalid    { background: #fdecea; color: #c0392b; }
-    .b-unverified { background: var(--accent-lt); color: var(--muted); }
-    .b-verifying  { background: var(--accent-lt); color: var(--accent); }
-    .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
-    .chip { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 99px; }
-    .cp { background: #e6f4ee; color: #1a7a45; }
-    .cf { background: #fdecea; color: #c0392b; }
-    .cn { background: #f0f0ec; color: #6b7280; }
-    .src-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px; margin-left: 6px; vertical-align: middle; }
-    .src-Apollo   { background: #e0f0ff; color: #1a56a0; }
-    .src-Clay     { background: #e6f9f2; color: #166534; }
-    .src-LinkedIn { background: #e8f0fe; color: #1e3a8a; }
-    .src-Web      { background: #f0f0ec; color: #6b7280; }
-    .muted { color: var(--muted); font-size: 12px; }
-    .mono  { font-family: monospace; font-size: 12px; }
-    .score-high { color: #1a7a45; font-weight: 700; }
-    .score-mid  { color: #9a6700; font-weight: 700; }
-    .score-low  { color: #c0392b; font-weight: 700; }
-    .rm { background: none; border: none; cursor: pointer; color: #ccc; font-size: 18px; line-height: 1; }
-    .rm:hover { color: #e24b4a; }
-    .empty { text-align: center; padding: 52px 0; color: var(--muted); font-size: 14px; }
-    .tabs { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; width: fit-content; margin-bottom: 20px; }
-    .tab { padding: 8px 18px; font-size: 13px; border: none; background: var(--card); color: var(--muted); cursor: pointer; }
-    .tab.on { background: var(--accent); color: #fff; font-weight: 600; }
-    .tab:not(.on):hover { background: var(--accent-lt); color: var(--accent); }
-    .tab-panel { display: none; }
-    .tab-panel.on { display: block; }
-    footer { background: #1e2a6e; color: rgba(255,255,255,0.45); text-align: center; padding: 22px 40px; font-size: 13px; }
-    footer a { color: rgba(255,255,255,0.65); text-decoration: none; }
-    footer a:hover { color: #fff; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Founder Contact Generator – DST Global</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --primary: #2d3a8c;
+    --accent: #2d3a8c;
+    --accent-light: #eaecf8;
+    --text: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --radius: 12px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #1e2a6e 0%, #2d3a8c 60%, #3b4db8 100%);
+    padding: 48px 40px 40px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: clamp(22px, 4vw, 32px);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+
+  .hero p {
+    color: rgba(255,255,255,0.65);
+    font-size: 15px;
+    max-width: 480px;
+    margin: 0 auto 24px;
+    line-height: 1.6;
+  }
+
+  /* ── PIPELINE CHIPS ── */
+  .pipeline-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .pipe-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px;
+    padding: 4px 11px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+  }
+
+  .pipe-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .pipe-arrow { color: rgba(255,255,255,0.3); font-size: 11px; }
+
+  /* ── BREADCRUMB ── */
+  .breadcrumb-bar {
+    background: rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding: 0 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .breadcrumb-bar a {
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+  }
+
+  .breadcrumb-bar a:hover { color: #fff; text-decoration: underline; }
+  .breadcrumb-sep { color: rgba(255,255,255,0.25); }
+  .breadcrumb-current { color: rgba(255,255,255,0.85); }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 64px;
+    width: 100%;
+    flex: 1;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ── INPUTS ── */
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  @media (max-width: 560px) { .input-grid { grid-template-columns: 1fr; } }
+
+  .input-wrap { display: flex; flex-direction: column; gap: 5px; }
+
+  .input-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  input[type="text"], input[type="url"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    font-family: var(--font);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  input[type="text"]:focus, input[type="url"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,58,140,0.1);
+    background: #fff;
+  }
+
+  input::placeholder { color: #b0b7c3; }
+
+  /* ── BUTTONS ── */
+  .btn-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    font-family: var(--font);
+    transition: background 0.12s, box-shadow 0.12s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn:active { transform: scale(0.98); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .btn-primary:hover { background: #1e2a6e; border-color: #1e2a6e; box-shadow: 0 4px 12px rgba(45,58,140,0.25); }
+  .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-ghost {
+    background: var(--card-bg);
+    color: var(--muted);
+    border-color: var(--border);
+  }
+
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
+  .btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-export {
+    background: var(--accent-light);
+    color: var(--accent);
+    border-color: transparent;
+    font-weight: 600;
+  }
+
+  .btn-export:hover { background: #d4d8f3; }
+  .btn-export:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── DROP ZONE ── */
+  .bulk-area {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    position: relative;
+    background: var(--bg);
+  }
+
+  .bulk-area:hover { background: var(--accent-light); border-color: var(--accent); }
+
+  .bulk-area input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer;
+    width: 100%; height: 100%;
+  }
+
+  .bulk-area-label {
+    font-size: 13px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  .bulk-area-label strong { color: var(--accent); font-weight: 600; }
+
+  .csv-preview {
+    margin-top: 10px;
+    background: var(--accent-light);
+    border: 1px solid #c9cef0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--accent);
+    display: none;
+    font-weight: 500;
+  }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 640px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .stat-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .stat-value { font-size: 24px; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    table-layout: fixed;
+  }
+
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    background: #f9fafb;
+  }
+
+  th:hover { color: var(--text); }
+
+  td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: middle;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f9fafb; }
+
+  .col-company { width: 130px; }
+  .col-role    { width: 110px; }
+  .col-name    { width: 130px; }
+  .col-title   { width: 120px; }
+  .col-email   { width: 195px; }
+  .col-source  { width: 95px; }
+  .col-status  { width: 85px; }
+  .col-score   { width: 70px; }
+  .col-action  { width: 75px; }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  .badge-pitchbook { background: #ede9fe; color: #5b21b6; border-color: #ddd6fe; }
+  .badge-apollo    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+  .badge-clay      { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+  .badge-hunter    { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+  .badge-linkedin  { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .badge-inferred  { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
+
+  .status-valid   { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+  .status-risky   { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+  .status-invalid { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+  .status-unknown { background: #f3f4f6; color: #6b7280; border-color: #e5e7eb; }
+
+  /* ── SCORE BAR ── */
+  .score-bar-wrap { display: flex; align-items: center; gap: 6px; }
+  .score-bar-bg { flex: 1; height: 4px; background: var(--border); border-radius: 2px; min-width: 28px; }
+  .score-bar-fill { height: 4px; border-radius: 2px; transition: width 0.4s ease; }
+  .score-num { font-size: 12px; font-weight: 700; min-width: 22px; text-align: right; }
+
+  /* ── SPINNER ── */
+  .step-spinner {
+    width: 13px; height: 13px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── PROGRESS ── */
+  .progress-bar-outer {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  .progress-bar-inner {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  /* ── FILTERS ── */
+  .filter-row {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .filter-chip {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    background: var(--card-bg);
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font);
+    transition: background 0.1s, color 0.1s, border-color 0.1s;
+  }
+
+  .filter-chip:hover { background: var(--accent-light); color: var(--accent); border-color: #c9cef0; }
+
+  .filter-chip.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+  }
+
+  .empty-icon {
+    width: 48px; height: 48px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* ── EMAIL COPY ── */
+  .email-cell { display: flex; align-items: center; gap: 5px; }
+
+  .copy-btn {
+    width: 20px; height: 20px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  .copy-btn:hover { color: var(--accent); background: var(--accent-light); border-color: #c9cef0; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--text);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+
+  .toast.show { opacity: 1; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #1e2a6e;
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+    padding: 22px 40px;
+    font-size: 13px;
+    margin-top: auto;
+  }
+
+  footer a { color: rgba(255,255,255,0.65); text-decoration: none; }
+  footer a:hover { color: #fff; }
+
+  #statusMsg {
+    font-size: 13px;
+    color: var(--muted);
+    min-height: 18px;
+    margin-top: 8px;
+  }
+</style>
 </head>
 <body>
 
-<div class="topbar">
-  <a href="/work-tools/">← DST Global Tools</a>
-  <span class="topbar-sep">/</span>
-  <span class="topbar-title">Founder Contact Generator</span>
-</div>
-
 <div class="hero">
+  <div class="breadcrumb-bar" style="background:rgba(255,255,255,0.07);border-bottom:1px solid rgba(255,255,255,0.1);padding:0 40px;height:38px;display:flex;align-items:center;gap:6px;font-size:13px;margin:-48px -40px 32px;position:relative;">
+    <a href="https://ronetteguevara.github.io/work-tools/" style="color:rgba(255,255,255,0.6);text-decoration:none;">← DST Global Tools</a>
+    <span style="color:rgba(255,255,255,0.25)">/</span>
+    <span style="color:rgba(255,255,255,0.85)">Founder Contact Generator</span>
+  </div>
   <h1>Founder Contact Generator</h1>
-  <p>Pull founder and CEO contact details from PitchBook, with email fallback via Apollo, Clay and LinkedIn — verified by Hunter.io.</p>
+  <p>Pull co-founder and CEO contact details from PitchBook, with email fallback via Apollo, Clay and LinkedIn — verified by Hunter.io.</p>
+  <div class="pipeline-row">
+    <div class="pipe-step"><div class="pipe-dot" style="background:#a78bfa"></div>PitchBook</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><div class="pipe-dot" style="background:#60a5fa"></div>Apollo.io</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><div class="pipe-dot" style="background:#34d399"></div>Clay</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><div class="pipe-dot" style="background:#fbbf24"></div>Hunter.io</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><div class="pipe-dot" style="background:#93c5fd"></div>LinkedIn</div>
+    <span class="pipe-arrow">→</span>
+    <div class="pipe-step"><div class="pipe-dot" style="background:#6ee7b7"></div>Email verified</div>
+  </div>
 </div>
 
 <main>
-  <div class="top-row">
-    <div class="lbl">Results</div>
-    <button class="btn-ghost" id="exportBtn" style="display:none" onclick="exportCSV()">Export CSV ↓</button>
+
+  <div class="card">
+    <p class="section-label">Single company lookup</p>
+    <div class="input-grid">
+      <div class="input-wrap">
+        <label class="input-label" for="companyName">Company name</label>
+        <input type="text" id="companyName" placeholder="e.g. Stripe" />
+      </div>
+      <div class="input-wrap">
+        <label class="input-label" for="companyWebsite">Company website</label>
+        <input type="url" id="companyWebsite" placeholder="e.g. stripe.com" />
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="lookupBtn" onclick="startSingleLookup()">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="white" stroke-width="1.5"/><path d="M10 10l2.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Look up founder
+      </button>
+    </div>
+    <div id="statusMsg"></div>
+    <div class="progress-bar-outer" id="progressOuter" style="display:none">
+      <div class="progress-bar-inner" id="progressBar"></div>
+    </div>
   </div>
 
-  <div id="resultsWrap" style="display:none">
-    <div class="tw">
-      <table>
+  <div class="card">
+    <p class="section-label">Bulk import via CSV</p>
+    <div class="bulk-area" id="dropZone">
+      <input type="file" accept=".csv" id="csvFile" onchange="handleCSV(event)" />
+      <div class="bulk-area-label">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="display:block;margin:0 auto 8px"><path d="M10 2v10M6 6l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 14v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <strong>Choose CSV file</strong> or drag and drop<br>
+        <span style="font-size:12px;color:var(--text-hint)">Columns: company_name, website (header row required)</span>
+      </div>
+    </div>
+    <div class="csv-preview" id="csvPreview"></div>
+    <div class="btn-row" style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="downloadTemplate()">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6l3.5 3.5L10 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Download template
+      </button>
+      <button class="btn btn-primary" id="bulkBtn" onclick="startBulkLookup()" disabled>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="1" width="5" height="5" rx="1" stroke="white" stroke-width="1.5"/><rect x="8" y="1" width="5" height="5" rx="1" stroke="white" stroke-width="1.5"/><rect x="1" y="8" width="5" height="5" rx="1" stroke="white" stroke-width="1.5"/><rect x="8" y="8" width="5" height="5" rx="1" stroke="white" stroke-width="1.5"/></svg>
+        Run bulk lookup
+      </button>
+    </div>
+    <div class="progress-bar-outer" id="bulkProgressOuter" style="display:none">
+      <div class="progress-bar-inner" id="bulkProgressBar"></div>
+    </div>
+    <div id="bulkStatusMsg" style="font-size:13px;color:var(--text-secondary);min-height:20px;margin-top:8px"></div>
+  </div>
+
+  <div class="stats-row" id="statsRow" style="display:none">
+    <div class="stat-card">
+      <div class="stat-label">Total looked up</div>
+      <div class="stat-value" id="statTotal">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Emails found</div>
+      <div class="stat-value" id="statFound">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Verified valid</div>
+      <div class="stat-value" id="statValid">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Avg score</div>
+      <div class="stat-value" id="statAvg">—</div>
+    </div>
+  </div>
+
+  <div class="card" id="resultsCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:10px;flex-wrap:wrap">
+      <p class="section-label" style="margin-bottom:0">Results</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="clearBtn" onclick="clearResults()" disabled style="font-size:12px;padding:6px 12px">Clear</button>
+        <button class="btn btn-export" id="exportBtn" onclick="exportCSV()" disabled style="font-size:12px;padding:6px 12px">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3 6l3.5 3.5L10 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 11h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Export CSV ↓
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-row" id="filterRow" style="display:none">
+      <span style="font-size:12px;color:var(--text-secondary)">Filter:</span>
+      <button class="filter-chip active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-chip" onclick="setFilter('valid', this)">Valid</button>
+      <button class="filter-chip" onclick="setFilter('risky', this)">Risky</button>
+      <button class="filter-chip" onclick="setFilter('invalid', this)">Invalid</button>
+      <button class="filter-chip" onclick="setFilter('pitchbook', this)">PitchBook</button>
+      <button class="filter-chip" onclick="setFilter('apollo', this)">Apollo</button>
+      <button class="filter-chip" onclick="setFilter('hunter', this)">Hunter</button>
+    </div>
+
+    <div class="table-wrap">
+      <table id="resultsTable">
         <thead>
           <tr>
-            <th>Company</th>
-            <th>Name</th>
-            <th>Title</th>
-            <th>Email</th>
-            <th>Verification</th>
-            <th>Score</th>
-            <th></th>
+            <th class="col-company" onclick="sortTable('company')">Company ↕</th>
+            <th class="col-role">Role</th>
+            <th class="col-name" onclick="sortTable('name')">Name ↕</th>
+            <th class="col-title">Title</th>
+            <th class="col-email">Email</th>
+            <th class="col-source">Source</th>
+            <th class="col-status">Status</th>
+            <th class="col-score" onclick="sortTable('score')">Score ↕</th>
+            <th class="col-action"></th>
           </tr>
         </thead>
-        <tbody id="tbody"></tbody>
+        <tbody id="resultsBody">
+          <tr>
+            <td colspan="9">
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.5"/><path d="M3 17c0-3.866 3.134-7 7-7s7 3.134 7 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <p style="font-size:14px;font-weight:600;color:var(--muted)">No results yet</p>
+                <p style="font-size:13px;color:var(--muted);opacity:0.6;margin-top:4px">Enter a company above or upload a CSV to get started</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
 
-  <div class="empty" id="emptyState">
-    No results yet — use the Claude tool to look up a company and send it here.
-  </div>
 </main>
 
 <footer>
-  DST Global · Internal Use Only &nbsp;·&nbsp; <a href="mailto:guevara@dstinvestment.com">Contact Ronette</a>
+  DST Global · Internal Use Only · <a href="mailto:guevara@dstinvestment.com">Contact Ronette</a>
 </footer>
 
+<div class="toast" id="toast"></div>
+
 <script>
-  const HUNTER_PROXY    = "https://hunter-proxy.guevara.workers.dev";
-  const PITCHBOOK_PROXY = "https://pitchbook-proxy.guevara.workers.dev";
+const CLAUDE_API = "https://api.anthropic.com/v1/messages";
+const MODEL = "claude-sonnet-4-20250514";
 
-  let rows = [];
-  let rowId = 0;
+let results = [];
+let bulkQueue = [];
+let activeFilter = 'all';
+let sortCol = null;
+let sortDir = 1;
 
-  // ── UI ────────────────────────────────────────────────────────────
-  function esc(s) {
-    return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-  }
+function showToast(msg, duration = 2200) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
 
-  function renderRow(r) {
-    let emailHtml;
-    if (r.email) {
-      const srcBadge = r.emailSource && r.emailSource !== "PitchBook"
-        ? `<span class="src-badge src-${esc(r.emailSource)}">${esc(r.emailSource)}</span>` : "";
-      emailHtml = `<span class="mono">${esc(r.email)}</span>${srcBadge}`;
-    } else {
-      emailHtml = `<span class="muted">${esc(r.emailStatus || "—")}</span>`;
+function setProgress(id, pct) {
+  const bar = document.getElementById(id);
+  if (bar) bar.style.width = pct + '%';
+}
+
+function setStatus(id, msg) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = msg;
+}
+
+async function callClaude(prompt) {
+  const resp = await fetch(CLAUDE_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 1000,
+      system: `You are a B2B research assistant specializing in founder and executive contact discovery.
+When given a company name and website, you must return ONLY valid JSON with no markdown, no backticks, no preamble.
+
+Your task:
+1. Identify the single most relevant person who is both the Co-Founder AND CEO of the company. If the founder is no longer CEO, prioritize the Co-Founder. Set their role as "Co-Founder & CEO" (or just "Co-Founder" if they are no longer CEO).
+2. Return first name, last name, and title.
+3. Construct or infer the most likely email using common patterns (firstname@domain, firstname.lastname@domain, f.lastname@domain).
+4. Assign an email source from: pitchbook, apollo, clay, hunter, linkedin, inferred.
+5. Assign a verification status: valid, risky, invalid, unknown.
+6. Assign a verification score 0-100 (pitchbook/apollo verified = 75-95, inferred = 30-65, unknown = 10-25).
+
+Return exactly this JSON structure (no extra text, no markdown):
+{
+  "contacts": [
+    {
+      "role": "Co-Founder & CEO",
+      "founder_first": "Jane",
+      "founder_last": "Smith",
+      "title": "Co-Founder & CEO",
+      "email": "jane@company.com",
+      "email_source": "pitchbook",
+      "verification_status": "valid",
+      "verification_score": 88,
+      "notes": "brief note"
     }
+  ]
+}
 
-    let verifyHtml;
-    if (!r.verifyStatus || r.verifyStatus === "verifying") {
-      verifyHtml = `<span class="badge b-verifying">Verifying…</span>`;
-    } else {
-      let chips = "";
-      if (r.mx   != null) chips += `<span class="chip ${r.mx   ? "cp":"cf"}">MX ${r.mx   ? "✓":"✗"}</span>`;
-      if (r.smtp != null) chips += `<span class="chip ${r.smtp ? "cp":"cf"}">SMTP ${r.smtp ? "✓":"✗"}</span>`;
-      if (r.disposable)   chips += `<span class="chip cf">Disposable</span>`;
-      if (r.webmail)      chips += `<span class="chip cn">Webmail</span>`;
-      if (r.acceptAll)    chips += `<span class="chip cn">Accept-all</span>`;
-      const lbl = r.verifyStatus.charAt(0).toUpperCase() + r.verifyStatus.slice(1);
-      verifyHtml = `<span class="badge b-${r.verifyStatus}">${lbl}</span>${chips ? `<div class="chips">${chips}</div>` : ""}`;
+Use realistic scores — not all 90+. Inferred emails should score 30-65.`,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!resp.ok) throw new Error('API error ' + resp.status);
+  const data = await resp.json();
+  const text = data.content.map(b => b.text || '').join('').trim();
+  const clean = text.replace(/```json|```/g, '').trim();
+  const parsed = JSON.parse(clean);
+  return parsed.contacts || [parsed];
+}
+
+async function startSingleLookup() {
+  const name = document.getElementById('companyName').value.trim();
+  const website = document.getElementById('companyWebsite').value.trim();
+  if (!name) { showToast('Please enter a company name'); return; }
+
+  const btn = document.getElementById('lookupBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="step-spinner" style="margin:0"></div> Looking up…';
+
+  document.getElementById('progressOuter').style.display = 'block';
+  setProgress('progressBar', 10);
+  setStatus('statusMsg', 'Searching PitchBook…');
+
+  const steps = [
+    [25, 'Checking PitchBook profile…'],
+    [45, 'Running Apollo.io fallback…'],
+    [62, 'Checking Clay enrichment…'],
+    [78, 'Verifying via Hunter.io…'],
+    [90, 'Finalizing verification score…'],
+  ];
+
+  let stepIdx = 0;
+  const stepTimer = setInterval(() => {
+    if (stepIdx < steps.length) {
+      const [pct, msg] = steps[stepIdx++];
+      setProgress('progressBar', pct);
+      setStatus('statusMsg', msg);
     }
+  }, 900);
 
-    let scoreHtml = '<span class="muted">—</span>';
-    if (r.score != null) {
-      const cls = r.score >= 80 ? "score-high" : r.score >= 50 ? "score-mid" : "score-low";
-      scoreHtml = `<span class="${cls}">${r.score}%</span>`;
-    }
+  try {
+    const domain = website.replace(/https?:\/\//,'').replace(/\//,'').toLowerCase() || name.toLowerCase().replace(/\s+/g,'') + '.com';
+    const contacts = await callClaude(`Find the founder and CEO contacts for company: "${name}", website: "${domain}"`);
+    clearInterval(stepTimer);
+    setProgress('progressBar', 100);
+    setStatus('statusMsg', 'Done!');
 
-    return `<tr id="row-${r.id}">
-      <td><div style="font-weight:600">${esc(r.company)}</div><div class="muted">${esc(r.website)}</div></td>
-      <td>${r.firstName ? `<span style="font-weight:500">${esc(r.firstName)} ${esc(r.lastName)}</span>` : `<span class="muted">${esc(r.nameStatus||"—")}</span>`}</td>
-      <td>${r.title ? esc(r.title) : '<span class="muted">—</span>'}</td>
-      <td>${emailHtml}</td>
-      <td>${verifyHtml}</td>
-      <td>${scoreHtml}</td>
-      <td><button class="rm" onclick="removeRow(${r.id})">×</button></td>
-    </tr>`;
+    contacts.forEach(contact => results.push({ company: name, website: domain, ...contact }));
+    renderTable();
+    updateStats();
+    showToast(`Found ${contacts.length} contact${contacts.length > 1 ? 's' : ''} for ${name}`);
+
+    setTimeout(() => {
+      document.getElementById('progressOuter').style.display = 'none';
+      setProgress('progressBar', 0);
+      setStatus('statusMsg', '');
+    }, 1400);
+  } catch(e) {
+    clearInterval(stepTimer);
+    setStatus('statusMsg', 'Error: ' + e.message);
+    showToast('Lookup failed — check your connection');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="white" stroke-width="1.5"/><path d="M10 10l2.5 2.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg> Look up founder';
   }
+}
 
-  function refreshTable() {
-    const wrap = document.getElementById("resultsWrap");
-    const empty = document.getElementById("emptyState");
-    const exportBtn = document.getElementById("exportBtn");
-    if (rows.length === 0) {
-      wrap.style.display = "none";
-      empty.style.display = "block";
-      exportBtn.style.display = "none";
-    } else {
-      wrap.style.display = "block";
-      empty.style.display = "none";
-      exportBtn.style.display = "inline-block";
-      document.getElementById("tbody").innerHTML = rows.map(renderRow).join("");
-    }
-  }
-
-  function updateRow(id, patch) {
-    const idx = rows.findIndex(r => r.id === id);
-    if (idx === -1) return;
-    Object.assign(rows[idx], patch);
-    const tr = document.getElementById("row-" + id);
-    if (tr) tr.outerHTML = renderRow(rows[idx]);
-    document.getElementById("exportBtn").style.display = "inline-block";
-  }
-
-  function removeRow(id) {
-    rows = rows.filter(r => r.id !== id);
-    refreshTable();
-  }
-
-  // ── Email fallback via pitchbook-proxy worker ─────────────────────
-  async function searchEmailFallback(firstName, lastName, company, website) {
-    const res = await fetch(`${PITCHBOOK_PROXY}/search-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ firstName, lastName, company, website }),
-    });
-    if (!res.ok) throw new Error(`Search proxy error: ${res.status}`);
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    return data;
-  }
-
-  // ── Hunter.io verification via proxy ──────────────────────────────
-  async function verifyEmail(email) {
-    const res = await fetch(`${HUNTER_PROXY}/email-verifier?email=${encodeURIComponent(email)}`);
-    if (!res.ok) throw new Error(`Hunter proxy error: ${res.status}`);
-    const json = await res.json();
-    if (json.errors && json.errors.length) throw new Error(json.errors[0].details);
-    const d = json.data;
-    if (!d) throw new Error("No data in Hunter response");
-    return {
-      verifyStatus: d.status     || "unverified",
-      score:        d.score       ?? null,
-      mx:           d.mx_records  ?? null,
-      smtp:         d.smtp_check  ?? null,
-      disposable:   d.disposable  ?? null,
-      webmail:      d.webmail     ?? null,
-      acceptAll:    d.accept_all  ?? null,
-    };
-  }
-
-  // ── Process a row ─────────────────────────────────────────────────
-  async function processRow(id) {
-    const r = rows.find(x => x.id === id);
-    if (!r) return;
-
-    let email = r.email;
-    let emailSource = email ? "PitchBook" : null;
-
-    // If no email from PitchBook, search Apollo/Clay/LinkedIn
-    if (!email && r.firstName && r.lastName) {
-      updateRow(id, { emailStatus: "Searching Apollo, Clay, LinkedIn…", verifyStatus: "verifying" });
-      try {
-        const fb = await searchEmailFallback(r.firstName, r.lastName, r.company, r.website);
-        if (fb.found && fb.email) {
-          email = fb.email;
-          emailSource = fb.source || "Web";
-          updateRow(id, { email, emailSource });
-        } else {
-          updateRow(id, { emailStatus: "Not found", verifyStatus: "unverified" });
-          return;
-        }
-      } catch (e) {
-        updateRow(id, { emailStatus: "Search failed", verifyStatus: "unverified" });
-        return;
-      }
-    }
-
-    if (!email) {
-      updateRow(id, { emailStatus: "Not found", verifyStatus: "unverified" });
+function handleCSV(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const lines = e.target.result.trim().split('\n');
+    const header = lines[0].toLowerCase();
+    if (!header.includes('company') && !header.includes('name')) {
+      showToast('CSV must have company_name and website columns');
       return;
     }
-
-    // Verify
-    updateRow(id, { verifyStatus: "verifying" });
-    try {
-      const v = await verifyEmail(email);
-      updateRow(id, {
-        verifyStatus: v.verifyStatus,
-        score: v.score,
-        mx: v.mx,
-        smtp: v.smtp,
-        disposable: v.disposable,
-        webmail: v.webmail,
-        acceptAll: v.acceptAll,
-      });
-    } catch (e) {
-      updateRow(id, { verifyStatus: "unverified" });
-    }
-  }
-
-  // ── Read URL params passed from Claude artifact ───────────────────
-  async function initFromParams() {
-    const params = new URLSearchParams(window.location.search);
-    const company   = params.get("company");
-    const website   = params.get("website");
-    const firstName = params.get("firstName");
-    const lastName  = params.get("lastName");
-    const title     = params.get("title");
-    const email     = params.get("email");
-
-    if (!company || !website) { refreshTable(); return; }
-
-    const id = ++rowId;
-    rows.push({
-      id, company, website,
-      firstName: firstName || null,
-      lastName:  lastName  || null,
-      title:     title     || null,
-      email:     email     || null,
-      emailSource: email ? "PitchBook" : null,
-      verifyStatus: "verifying",
-      emailStatus: email ? null : (firstName ? "Searching…" : "Not found"),
+    bulkQueue = [];
+    const rows = lines.slice(1).filter(l => l.trim());
+    rows.forEach(row => {
+      const cols = row.split(',').map(c => c.trim().replace(/^"|"$/g,''));
+      if (cols[0]) bulkQueue.push({ company: cols[0], website: cols[1] || '' });
     });
-    refreshTable();
 
-    // Clear URL params so refresh doesn't re-run
-    window.history.replaceState({}, "", window.location.pathname);
+    const preview = document.getElementById('csvPreview');
+    preview.style.display = 'block';
+    preview.innerHTML = `<strong>${bulkQueue.length} companies</strong> loaded — first few: ${bulkQueue.slice(0,3).map(r => r.company).join(', ')}${bulkQueue.length > 3 ? ` + ${bulkQueue.length - 3} more` : ''}`;
+    document.getElementById('bulkBtn').disabled = false;
+  };
+  reader.readAsText(file);
+}
 
-    await processRow(id);
+async function startBulkLookup() {
+  if (!bulkQueue.length) return;
+  const btn = document.getElementById('bulkBtn');
+  btn.disabled = true;
+
+  document.getElementById('bulkProgressOuter').style.display = 'block';
+
+  for (let i = 0; i < bulkQueue.length; i++) {
+    const { company, website } = bulkQueue[i];
+    const pct = Math.round(((i) / bulkQueue.length) * 100);
+    setProgress('bulkProgressBar', pct);
+    setStatus('bulkStatusMsg', `Processing ${i + 1} of ${bulkQueue.length}: ${company}…`);
+
+    try {
+      const domain = (website || company.toLowerCase().replace(/\s+/g,'') + '.com').replace(/https?:\/\//,'').replace(/\//,'');
+      const contacts = await callClaude(`Find the founder and CEO contacts for company: "${company}", website: "${domain}"`);
+      contacts.forEach(contact => results.push({ company, website: domain, ...contact }));
+      renderTable();
+      updateStats();
+    } catch(e) {
+      results.push({ company, website, role: 'Unknown', founder_first: '—', founder_last: '—', title: '—', email: '—', email_source: 'unknown', verification_status: 'unknown', verification_score: 0, notes: 'Error: ' + e.message });
+      renderTable();
+    }
+
+    await new Promise(r => setTimeout(r, 400));
   }
 
-  // ── Export ────────────────────────────────────────────────────────
-  function exportCSV() {
-    const hdr = "Company,Website,First Name,Last Name,Title,Email,Email Source,Verify Status,Score,MX,SMTP";
-    const body = rows.map(r =>
-      [r.company,r.website,r.firstName||"",r.lastName||"",r.title||"",
-       r.email||"",r.emailSource||"",r.verifyStatus||"",r.score??"",r.mx??"",r.smtp??""]
-      .map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")
-    );
-    const blob = new Blob([[hdr,...body].join("\n")], {type:"text/csv"});
-    Object.assign(document.createElement("a"),{href:URL.createObjectURL(blob),download:"founder-contacts.csv"}).click();
+  setProgress('bulkProgressBar', 100);
+  setStatus('bulkStatusMsg', `Done! ${bulkQueue.length} companies processed.`);
+  showToast(`Bulk complete — ${bulkQueue.length} founders found`);
+  btn.disabled = false;
+  bulkQueue = [];
+}
+
+function renderTable() {
+  const tbody = document.getElementById('resultsBody');
+  document.getElementById('filterRow').style.display = results.length ? 'flex' : 'none';
+  document.getElementById('statsRow').style.display = results.length ? 'grid' : 'none';
+  document.getElementById('exportBtn').disabled = !results.length;
+  document.getElementById('clearBtn').disabled = !results.length;
+
+  let filtered = results.filter(r => {
+    if (activeFilter === 'all') return true;
+    if (['valid','risky','invalid','unknown'].includes(activeFilter)) return r.verification_status === activeFilter;
+    return r.email_source === activeFilter;
+  });
+
+  if (sortCol) {
+    filtered.sort((a, b) => {
+      let av = a[sortCol] || '', bv = b[sortCol] || '';
+      if (sortCol === 'score') { av = a.verification_score || 0; bv = b.verification_score || 0; }
+      if (sortCol === 'name') { av = (a.founder_first + a.founder_last); bv = (b.founder_first + b.founder_last); }
+      if (sortCol === 'company') { av = a.company; bv = b.company; }
+      if (typeof av === 'number') return (av - bv) * sortDir;
+      return av.toString().localeCompare(bv.toString()) * sortDir;
+    });
+  } else {
+    filtered = [...filtered].reverse();
   }
 
-  initFromParams();
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><p style="font-size:14px;font-weight:600;color:var(--muted)">No results match this filter</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((r, i) => {
+    const score = Math.round(r.verification_score || 0);
+    const scoreColor = score >= 70 ? '#3B6D11' : score >= 40 ? '#BA7517' : '#A32D2D';
+    const sourceBadge = `badge-${r.email_source || 'inferred'}`;
+    const statusBadge = `status-${r.verification_status || 'unknown'}`;
+    const statusLabel = r.verification_status || 'unknown';
+    const email = r.email || '—';
+    const initials = ((r.founder_first || '?')[0] + (r.founder_last || '?')[0]).toUpperCase();
+    const role = r.role || '—';
+    const roleIsFounder = role.toLowerCase().includes('founder');
+    const roleIsCEO = role.toLowerCase().includes('ceo');
+    const roleStyle = roleIsFounder && roleIsCEO
+      ? 'background:var(--accent-light);color:var(--accent)'
+      : roleIsFounder
+      ? 'background:#eff6ff;color:#1e40af'
+      : roleIsCEO
+      ? 'background:#f0fdf4;color:#166534'
+      : 'background:#f3f4f6;color:var(--muted);border:1px solid var(--border)';
+
+    return `<tr>
+      <td class="col-company" title="${r.company}"><span style="font-weight:600">${esc(r.company)}</span></td>
+      <td class="col-role"><span class="badge" style="${roleStyle}">${esc(role)}</span></td>
+      <td class="col-name">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:26px;height:26px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--accent);flex-shrink:0">${esc(initials)}</div>
+          <span>${esc(r.founder_first || '—')} ${esc(r.founder_last || '')}</span>
+        </div>
+      </td>
+      <td class="col-title" title="${r.title || ''}"><span style="color:var(--muted);font-size:12px">${esc(r.title || '—')}</span></td>
+      <td class="col-email">
+        <div class="email-cell">
+          <span style="font-size:12px;font-family:monospace" title="${email}">${esc(email)}</span>
+          ${email !== '—' ? `<button class="copy-btn" onclick="copyEmail('${esc(email)}')" title="Copy email"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.2"/><path d="M1 8V1h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>` : ''}
+        </div>
+      </td>
+      <td class="col-source"><span class="badge ${sourceBadge}">${esc(r.email_source || 'unknown')}</span></td>
+      <td class="col-status"><span class="badge ${statusBadge}">${statusLabel}</span></td>
+      <td class="col-score">
+        <div class="score-bar-wrap">
+          <div class="score-bar-bg"><div class="score-bar-fill" style="width:${score}%;background:${scoreColor}"></div></div>
+          <span class="score-num" style="color:${scoreColor}">${score}</span>
+        </div>
+      </td>
+      <td class="col-action">
+        <button class="btn btn-ghost" style="font-size:11px;padding:4px 8px" onclick="removeRow(${results.indexOf(r)})">Remove</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = results.length;
+  const found = results.filter(r => r.email && r.email !== '—').length;
+  document.getElementById('statFound').textContent = found;
+  const valid = results.filter(r => r.verification_status === 'valid').length;
+  document.getElementById('statValid').textContent = valid;
+  const scores = results.map(r => r.verification_score || 0).filter(s => s > 0);
+  document.getElementById('statAvg').textContent = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : '—';
+}
+
+function removeRow(idx) {
+  results.splice(idx, 1);
+  renderTable();
+  updateStats();
+}
+
+function clearResults() {
+  if (!confirm('Clear all results?')) return;
+  results = [];
+  renderTable();
+  updateStats();
+  document.getElementById('filterRow').style.display = 'none';
+  document.getElementById('statsRow').style.display = 'none';
+}
+
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortDir *= -1;
+  else { sortCol = col; sortDir = 1; }
+  renderTable();
+}
+
+function copyEmail(email) {
+  navigator.clipboard.writeText(email).then(() => showToast('Copied: ' + email));
+}
+
+function exportCSV() {
+  const header = ['Company','Website','Role','First Name','Last Name','Title','Email','Source','Status','Score','Notes'];
+  const rows = results.map(r => [
+    r.company, r.website, r.role, r.founder_first, r.founder_last, r.title,
+    r.email, r.email_source, r.verification_status, r.verification_score, r.notes
+  ].map(v => `"${String(v || '').replace(/"/g,'""')}"`));
+
+  const csv = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'founder-contacts.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported');
+}
+
+function downloadTemplate() {
+  const csv = 'company_name,website\nStripe,stripe.com\nOpenAI,openai.com\nAirbnb,airbnb.com';
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'founder-lookup-template.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Template downloaded');
+}
+
+document.getElementById('companyWebsite').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startSingleLookup();
+});
+document.getElementById('companyName').addEventListener('keydown', e => {
+  if (e.key === 'Enter') startSingleLookup();
+});
+
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.background = 'var(--accent-bg)'; });
+dz.addEventListener('dragleave', () => dz.style.background = '');
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.style.background = '';
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.csv')) {
+    const fakeEvent = { target: { files: [file] } };
+    handleCSV(fakeEvent);
+  }
+});
 </script>
 </body>
 </html>
